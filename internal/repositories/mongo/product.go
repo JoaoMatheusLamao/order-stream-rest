@@ -2,28 +2,47 @@ package mongo
 
 import (
 	"context"
-	"errors"
 	"log"
 	"shortify/internal/models"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// GetProduct is a function that gets a product
-func (m *MongoInternal) GetProduct(sku string) (models.Product, error) {
+// GetProduct is a function that gets a product with pagination
+func (m *MongoInternal) GetProduct(page int64, limit int64, sku ...string) ([]models.Product, error) {
 
 	collection := m.client.Database("stream_orders").Collection("products")
 
-	filter := bson.D{{Key: "sku", Value: sku}}
-
-	var prod models.Product
-	err := collection.FindOne(context.Background(), filter).Decode(&prod)
-	if err != nil {
-		log.Println("Error getting product from MongoDB database: " + err.Error())
+	var filter bson.D
+	if len(sku) > 0 {
+		filter = bson.D{{Key: "sku", Value: bson.D{{Key: "$in", Value: sku}}}}
+	} else {
+		filter = bson.D{}
 	}
-	return prod, err
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	findOptions := options.Find()
+	findOptions.SetSkip((page - 1) * limit)
+	findOptions.SetLimit(limit)
+
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		log.Println("Error finding products in MongoDB database: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var products []models.Product
+	if err = cursor.All(ctx, &products); err != nil {
+		log.Println("Error decoding products from MongoDB cursor: " + err.Error())
+		return nil, err
+	}
+
+	return products, nil
 }
 
 // InsertProduct is a function that upserts a product
@@ -31,21 +50,10 @@ func (m *MongoInternal) InsertProduct(prod models.Product) error {
 
 	collection := m.client.Database("stream_orders").Collection("products")
 
-	_, err := m.GetProduct(prod.SKU)
-	if err == nil {
-		log.Println("Product already exists with ID: ", prod.SKU)
-		return errors.New("Product already exists with ID: " + prod.SKU)
-	}
-
-	if err != mongo.ErrNoDocuments {
-		log.Println("Error checking for existing product in MongoDB database: " + err.Error())
-		return err
-	}
-
 	// Add insertion date
 	prod.InsertionDate = time.Now()
 
-	_, err = collection.InsertOne(context.Background(), prod)
+	_, err := collection.InsertOne(context.Background(), prod)
 	if err != nil {
 		log.Println("Error inserting product into MongoDB database: " + err.Error())
 	}

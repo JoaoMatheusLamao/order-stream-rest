@@ -3,9 +3,9 @@ package product
 import (
 	"shortify/internal/config"
 	"shortify/internal/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // GetProduct is a function that gets a product
@@ -15,20 +15,42 @@ func GetProduct(cfg *config.Config) gin.HandlerFunc {
 
 		sku := c.Param("sku")
 
-		product, err := find(sku, cfg)
-		if err == mongo.ErrNoDocuments {
-			c.JSON(404, gin.H{
-				"error": "Product not found",
-			})
-			return
-		} else if err != nil {
+		response := find(cfg, 1, 1, sku)
+		c.JSON(response.StatusCode, response)
+
+	}
+}
+
+// GetAllProducts is a function that gets all products
+func GetAllProducts(cfg *config.Config) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		pageStr := c.DefaultQuery("page", "1")
+		limitStr := c.DefaultQuery("limit", "50")
+
+		page, err := strconv.ParseInt(pageStr, 10, 64)
+		if err != nil {
 			c.JSON(400, gin.H{
-				"error": err.Error(),
+				"error": "Invalid page parameter",
 			})
 			return
 		}
 
-		c.JSON(200, product)
+		limit, err := strconv.ParseInt(limitStr, 10, 64)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error": "Invalid limit parameter",
+			})
+			return
+		}
+
+		if page <= 0 {
+			page = 1
+		}
+		response := find(cfg, page, limit)
+		c.JSON(response.StatusCode, response)
+
 	}
 }
 
@@ -47,17 +69,8 @@ func CreateProduct(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		err = create(request, cfg)
-		if err != nil {
-			c.JSON(400, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(201, gin.H{
-			"message": "Product created successfully",
-		})
+		response := create(request, cfg)
+		c.JSON(response.StatusCode, response)
 	}
 
 }
@@ -79,22 +92,8 @@ func UpdateProduct(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		err = update(sku, request, cfg)
-		if err == mongo.ErrNoDocuments {
-			c.JSON(404, gin.H{
-				"error": "Product not found",
-			})
-			return
-		} else if err != nil {
-			c.JSON(400, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(200, gin.H{
-			"message": "Product updated successfully",
-		})
+		response := update(sku, request, cfg)
+		c.JSON(response.StatusCode, response)
 	}
 }
 
@@ -105,21 +104,8 @@ func DeleteProduct(cfg *config.Config) gin.HandlerFunc {
 
 		sku := c.Param("sku")
 
-		err := delete(sku, cfg)
-		if err == mongo.ErrNoDocuments {
-			c.JSON(404, gin.H{
-				"error": "Product not found",
-			})
-			return
-		} else if err != nil {
-			c.JSON(400, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
+		response := delete(sku, cfg)
+		c.JSON(response.StatusCode, response)
 
-		c.JSON(200, gin.H{
-			"message": "Product deleted successfully",
-		})
 	}
 }

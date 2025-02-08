@@ -3,16 +3,45 @@ package product
 import (
 	"shortify/internal/config"
 	"shortify/internal/models"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // find is a function that finds a product
-func find(sku string, cfg *config.Config) (models.Product, error) {
+func find(cfg *config.Config, page, limit int64, sku ...string) models.GenericResponse {
 
-	// Find the product in the database
-	product, err := cfg.Mongo.GetProduct(sku)
-	if err != nil {
-		return product, err
+	response := models.GenericResponse{
+		Status:     models.Success,
+		Message:    "Product found",
+		StatusCode: 200,
+		Data:       nil,
 	}
 
-	return product, nil
+	// Find the product in the database
+	product, err := cfg.Mongo.GetProduct(page, limit, sku...)
+	if err == mongo.ErrNoDocuments {
+		response.Status = models.Error
+		response.Message = "Product not found"
+		response.StatusCode = 404
+		response.Data = nil
+		return response
+	} else if err != nil {
+		response.Status = models.Error
+		response.Message = "Internal server error: " + err.Error()
+		response.StatusCode = 500
+		response.Data = nil
+		return response
+	}
+
+	if len(product) == 0 {
+		response.Status = models.Error
+		response.Message = "Product not found"
+		response.StatusCode = 404
+		response.Data = nil
+		return response
+	} else {
+		response.Data = product
+	}
+
+	return response
 }

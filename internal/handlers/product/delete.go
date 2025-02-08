@@ -2,22 +2,33 @@ package product
 
 import (
 	"shortify/internal/config"
-
-	"go.mongodb.org/mongo-driver/mongo"
+	"shortify/internal/models"
 )
 
 // delete is a function that deletes a product
-func delete(sku string, cfg *config.Config) error {
+func delete(sku string, cfg *config.Config) models.GenericResponse {
+
+	response := models.GenericResponse{
+		StatusCode: 200,
+		Status:     models.Success,
+		Message:    "Product deleted successfully",
+	}
 
 	// Delete the product from the database
 	deleted, err := cfg.Mongo.DeleteProduct(sku)
 	if err != nil {
-		return err
+		response.StatusCode = 400
+		response.Status = models.Error
+		response.Message = err.Error()
+		return response
 	}
 
 	if !deleted {
-		return mongo.ErrNoDocuments
+		response.StatusCode = 404
+		response.Status = models.Error
+		response.Message = "Product not found"
+		return response
 	}
 
-	return nil
+	return response
 }

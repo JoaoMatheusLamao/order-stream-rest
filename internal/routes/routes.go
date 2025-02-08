@@ -14,6 +14,7 @@ func InitiateRoutes(engine *gin.Engine, cfg *config.Config) {
 	healthGroup.GET("/", healthcheck.HealthCheck)
 
 	productGroup := engine.Group("/product")
+	productGroup.GET("", product.GetAllProducts(cfg))
 	productGroup.GET("/:sku", product.GetProduct(cfg))
 	productGroup.POST("", product.CreateProduct(cfg))
 	productGroup.PUT("/:sku", product.UpdateProduct(cfg))
