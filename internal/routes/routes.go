@@ -3,6 +3,7 @@ package routes
 import (
 	"orderstreamrest/internal/config"
 	"orderstreamrest/internal/handlers/healthcheck"
+	"orderstreamrest/internal/handlers/order"
 	"orderstreamrest/internal/handlers/product"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ func InitiateRoutes(engine *gin.Engine, cfg *config.Config) {
 	productGroup.PUT("/:sku", product.UpdateProduct(cfg))
 	productGroup.DELETE("/:sku", product.DeleteProduct(cfg))
 
-	// orderGroup := engine.Group("/order")
-	// orderGroup.POST("", order.CreateOrder(cfg))
+	orderGroup := engine.Group("/order")
+	orderGroup.POST("", order.CreateOrder(cfg))
 
 }

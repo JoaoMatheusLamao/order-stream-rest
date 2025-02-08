@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"strconv"
 	"time"
 
 	"golang.org/x/exp/rand"
@@ -36,5 +37,7 @@ func randomString() string {
 		b[i] = charset[r.Intn(len(charset))]
 	}
 
-	return string(b)
+	// Add a timestamp to ensure uniqueness
+	timestamp := time.Now().UnixNano()
+	return string(b) + hex.EncodeToString(md5.New().Sum([]byte(strconv.FormatInt(timestamp, 10))))[:6]
 }

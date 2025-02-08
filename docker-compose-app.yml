@@ -32,5 +32,5 @@ volumes:
       
 networks:
   kafka-network:
-    name: kafka_kafka-network
+    name: orderstreamrest_kafka-network
     external: true

@@ -50,9 +50,11 @@ func NewKafkaInternal() (*KafkaInternal, error) {
 	}
 
 	w := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{broker},
-		Topic:    topic,
-		Balancer: &kafka.LeastBytes{},
+		Brokers:      []string{broker},
+		Topic:        topic,
+		Balancer:     &kafka.LeastBytes{},
+		Async:        true,
+		RequiredAcks: int(kafka.RequireOne),
 	})
 
 	return &KafkaInternal{
