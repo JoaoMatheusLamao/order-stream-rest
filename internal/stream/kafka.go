@@ -16,9 +16,38 @@ type KafkaInternal struct {
 
 // NewKafkaInternal is a function that returns a new KafkaInternal struct
 func NewKafkaInternal() (*KafkaInternal, error) {
-
 	broker := "localhost:9092"
 	topic := "orders"
+
+	conn, err := kafka.Dial("tcp", broker)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to Kafka broker: %w", err)
+	}
+	defer conn.Close()
+
+	partitions, err := conn.ReadPartitions()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read partitions: %w", err)
+	}
+
+	topicExists := false
+	for _, p := range partitions {
+		if p.Topic == topic {
+			topicExists = true
+			break
+		}
+	}
+
+	if !topicExists {
+		err = conn.CreateTopics(kafka.TopicConfig{
+			Topic:             topic,
+			NumPartitions:     1,
+			ReplicationFactor: 1,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create topic: %w", err)
+		}
+	}
 
 	w := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{broker},
