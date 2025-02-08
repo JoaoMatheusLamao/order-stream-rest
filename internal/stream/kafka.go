@@ -16,7 +16,7 @@ type KafkaInternal struct {
 
 // NewKafkaInternal is a function that returns a new KafkaInternal struct
 func NewKafkaInternal() (*KafkaInternal, error) {
-	broker := "localhost:9092"
+	broker := "kafka:9092"
 	topic := "orders"
 
 	conn, err := kafka.Dial("tcp", broker)

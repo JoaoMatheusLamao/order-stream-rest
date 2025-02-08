@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - order_stream_network
+      - kafka-network
     depends_on:
       - order_stream_redis
     volumes:
@@ -21,7 +21,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - order_stream_network
+      - kafka-network
     command: ["redis-server", "--appendonly", "no"]
 
 volumes:
@@ -31,5 +31,6 @@ volumes:
     driver: local
       
 networks:
-  order_stream_network:
-    driver: bridge
+  kafka-network:
+    name: kafka_kafka-network
+    external: true
