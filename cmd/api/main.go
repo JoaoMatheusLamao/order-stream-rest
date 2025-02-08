@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"orderstream/internal/config"
+	"orderstream/internal/routes"
+	"orderstream/internal/utils"
+	"orderstream/pkg/middleware"
 	"os"
-	"shortify/internal/config"
-	"shortify/internal/routes"
-	"shortify/internal/utils"
-	"shortify/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

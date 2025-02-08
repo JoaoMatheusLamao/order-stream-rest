@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"shortify/internal/config"
-	"shortify/internal/handlers/healthcheck"
-	"shortify/internal/handlers/product"
+	"orderstream/internal/config"
+	"orderstream/internal/handlers/healthcheck"
+	"orderstream/internal/handlers/product"
 
 	"github.com/gin-gonic/gin"
 )

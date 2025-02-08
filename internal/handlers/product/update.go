@@ -1,8 +1,8 @@
 package product
 
 import (
-	"shortify/internal/config"
-	"shortify/internal/models"
+	"orderstream/internal/config"
+	"orderstream/internal/models"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )

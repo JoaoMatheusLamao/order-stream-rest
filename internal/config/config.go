@@ -2,8 +2,8 @@ package config
 
 import (
 	"errors"
-	"shortify/internal/repositories/mongo"
-	"shortify/internal/repositories/redis"
+	"orderstream/internal/repositories/mongo"
+	"orderstream/internal/repositories/redis"
 )
 
 // Config - a struct that holds a redis client

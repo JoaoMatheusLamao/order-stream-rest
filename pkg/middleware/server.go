@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"orderstream/internal/config"
+	"orderstream/internal/utils"
 	"os"
-	"shortify/internal/config"
-	"shortify/internal/utils"
 	"strconv"
 	"time"
 
