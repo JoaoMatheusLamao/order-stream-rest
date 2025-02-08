@@ -4,12 +4,14 @@ import (
 	"errors"
 	"orderstreamrest/internal/repositories/mongo"
 	"orderstreamrest/internal/repositories/redis"
+	"orderstreamrest/internal/stream"
 )
 
 // Config - a struct that holds a redis client
 type Config struct {
 	Redis *redis.RedisInternal
 	Mongo *mongo.MongoInternal
+	Kafka *stream.KafkaInternal
 }
 
 // NewConfig - a function that returns a new Config struct
@@ -23,6 +25,11 @@ func NewConfig() (*Config, error) {
 	}
 
 	err = cfg.newClientMongo()
+	if err != nil {
+		return cfg, err
+	}
+
+	err = cfg.newKafkaInternal()
 	if err != nil {
 		return cfg, err
 	}
@@ -58,6 +65,19 @@ func (cfg *Config) newClientRedis() error {
 	}
 
 	cfg.Redis = r
+
+	return nil
+}
+
+// newKafkaInternal is a function that returns a new KafkaInternal struct
+func (cfg *Config) newKafkaInternal() error {
+
+	k, err := stream.NewKafkaInternal()
+	if err != nil {
+		return errors.New("Error creating kafka client: " + err.Error())
+	}
+
+	cfg.Kafka = k
 
 	return nil
 }
