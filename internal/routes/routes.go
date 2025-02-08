@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"orderstream/internal/config"
-	"orderstream/internal/handlers/healthcheck"
-	"orderstream/internal/handlers/product"
+	"orderstreamrest/internal/config"
+	"orderstreamrest/internal/handlers/healthcheck"
+	"orderstreamrest/internal/handlers/product"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,4 +1,4 @@
-module orderstream
+module orderstreamrest
 
 go 1.23.2
 

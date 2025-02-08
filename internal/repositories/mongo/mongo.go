@@ -47,7 +47,7 @@ func NewMongoInternal() (*MongoInternal, error) {
 // UpsertAnalyticsInMongo is a function that inserts or updates the analytics data in MongoDB
 func (m *MongoInternal) UpsertAnalyticsInMongo(shortURL, originalURL, clientIP string) {
 
-	collection := m.client.Database("orderstream").Collection("short_urls")
+	collection := m.client.Database("orderstreamrest").Collection("short_urls")
 	safeIP := strings.ReplaceAll(clientIP, ".", "_")
 
 	filter := bson.D{{Key: "original_url", Value: originalURL}}

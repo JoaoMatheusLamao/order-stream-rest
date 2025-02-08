@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 	"log"
-	"orderstream/internal/models"
+	"orderstreamrest/internal/models"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"

@@ -1,10 +1,8 @@
 package product
 
 import (
-	"orderstream/internal/config"
-	"orderstream/internal/models"
-
-	"go.mongodb.org/mongo-driver/mongo"
+	"orderstreamrest/internal/config"
+	"orderstreamrest/internal/models"
 )
 
 // create is a function that creates a product
@@ -25,15 +23,23 @@ func create(prodIn models.Product, cfg *config.Config) models.GenericResponse {
 		return response
 	}
 
-	err = cfg.Mongo.InsertProduct(prodIn)
-	if err == mongo.ErrNoDocuments {
+	existingProduct, err := cfg.Mongo.GetProduct(1, 1, prodIn.SKU)
+	if err != nil {
 		response.Status = models.Error
-		response.Message = "Product not found"
-		response.StatusCode = 404
-		response.Data = nil
+		response.Message = "Internal server error: " + err.Error()
+		response.StatusCode = 500
 		return response
-	} else if err != nil {
+	}
 
+	if existingProduct != nil && len(existingProduct) > 0 {
+		response.Status = models.Error
+		response.Message = "Product already exists"
+		response.StatusCode = 409
+		return response
+	}
+
+	err = cfg.Mongo.InsertProduct(prodIn)
+	if err != nil {
 		response.Status = models.Error
 		response.Message = "Internal server error: " + err.Error()
 		response.StatusCode = 500

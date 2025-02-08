@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"orderstream/internal/config"
-	"orderstream/internal/routes"
-	"orderstream/internal/utils"
-	"orderstream/pkg/middleware"
+	"orderstreamrest/internal/config"
+	"orderstreamrest/internal/routes"
+	"orderstreamrest/internal/utils"
+	"orderstreamrest/pkg/middleware"
 	"os"
 
 	"github.com/gin-gonic/gin"

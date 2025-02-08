@@ -1,8 +1,8 @@
 package product
 
 import (
-	"orderstream/internal/config"
-	"orderstream/internal/models"
+	"orderstreamrest/internal/config"
+	"orderstreamrest/internal/models"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )

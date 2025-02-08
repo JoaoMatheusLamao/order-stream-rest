@@ -2,8 +2,8 @@ package config
 
 import (
 	"errors"
-	"orderstream/internal/repositories/mongo"
-	"orderstream/internal/repositories/redis"
+	"orderstreamrest/internal/repositories/mongo"
+	"orderstreamrest/internal/repositories/redis"
 )
 
 // Config - a struct that holds a redis client
