@@ -1,0 +1,36 @@
+services:
+  order_stream:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - kafka-network
+    depends_on:
+      - order_stream_redis
+    volumes:
+      - order_stream_data:/app/certificates
+      - /etc/letsencrypt/archive/shortify.ininetech.com.br:/app/certificates
+    
+  order_stream_redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - kafka-network
+    command: ["redis-server", "--appendonly", "no"]
+
+volumes:
+  redis_data:
+    driver: local
+  order_stream_data:
+    driver: local
+      
+networks:
+  kafka-network:
+    name: orderstreamrest_kafka-network
+    external: true
