@@ -1,65 +1,118 @@
 # Order Stream
 
-## Descrição
+## Description
 
-Este projeto é uma aplicação de streaming de pedidos que utiliza Kafka para comunicação entre produtores e consumidores. A aplicação inclui um CRUD de produtos, um produtor de pedidos via API que envia mensagens para o Kafka, e um consumidor que lê as mensagens do Kafka e as envia para o MongoDB.
+Order Stream is a microservice-based application designed to handle product orders. It includes a CRUD for products, an API for creating orders that sends messages to Kafka, and a consumer that reads messages from Kafka and stores them in MongoDB.
 
-## Funcionalidades
+## Features
 
-- CRUD de Produtos
-- Produtor de Pedidos via API
-- Envio de Pedidos para Kafka
-- Consumidor de Pedidos do Kafka
-- Armazenamento de Pedidos no MongoDB
+- **Product CRUD**: Create, Read, Update, and Delete products.
+- **Order Producer**: API to create orders and send them to Kafka.
+- **Order Consumer**: Reads orders from Kafka and stores them in MongoDB.
 
-## Estrutura do Projeto
+## Project Structure
 
-- `internal/models`: Contém as definições das estruturas de dados, como `Order`, `Item` e `Customer`.
-- `internal/repositories/mongo`: Contém a lógica de interação com o MongoDB.
-- `internal/stream`: Contém a lógica de interação com o Kafka, incluindo o produtor e o consumidor.
+- `internal/models`: Contains data structure definitions such as `Order`, `Item`, and `Customer`.
+- `internal/repositories/mongo`: Contains logic for interacting with MongoDB.
+- `internal/stream`: Contains logic for interacting with Kafka, including the producer and consumer.
 
-## Configuração
-
-### Pré-requisitos
+## Prerequisites
 
 - Docker
 - Docker Compose
 
-### Instalação
+## Installation
 
-1. Clone o repositório:
+1. Clone the repository:
 
     ```sh
-    git clone https://github.com/seu-usuario/orderstreamrest.git
+    git clone https://github.com/your-username/orderstreamrest.git
     cd orderstreamrest
     ```
 
-2. Inicie os serviços com Docker Compose:
+2. Start the services using Docker Compose:
 
     ```sh
     docker-compose up -d
     ```
 
-3. Acesse a aplicação em `http://localhost:8080`.
+3. Access the application at `http://localhost:8080`.
 
-## Uso
+## Usage
 
-### CRUD de Produtos
+### Product CRUD
 
-- **Criar Produto**: `POST /products`
-- **Listar Produtos**: `GET /products`
-- **Atualizar Produto**: `PUT /products/{id}`
-- **Deletar Produto**: `DELETE /products/{id}`
+- **Create Product**: `POST /products`
+  - Request Body:
 
-### Produtor de Pedidos
+    ```json
+    {
+      "name": "Product Name",
+      "description": "Product Description",
+      "price": 100.0
+    }
+    ```
 
-- **Criar Pedido**: `POST /orders`
+- **List Products**: `GET /products`
 
-### Consumidor de Pedidos
+- **Update Product**: `PUT /products/{id}`
+  - Request Body:
 
-O consumidor é iniciado automaticamente e lê as mensagens do Kafka, enviando-as para o MongoDB.
+    ```json
+    {
+      "name": "Updated Product Name",
+      "description": "Updated Product Description",
+      "price": 150.0
+    }
+    ```
 
-## Tecnologias Utilizadas
+- **Delete Product**: `DELETE /products/{id}`
+
+### Order Producer
+
+- **Create Order**: `POST /orders`
+  - Request Body:
+
+    ```json
+    {
+      "order_id": "12345",
+      "internal_order_id": "54321",
+      "items": [
+        {
+          "item_id": "item1",
+          "quantity": 2,
+          "price": 10.5
+        },
+        {
+          "item_id": "item2",
+          "quantity": 1,
+          "price": 20.0
+        }
+      ],
+      "total": 41.0,
+      "customer": {
+        "customer_id": "cust123",
+        "name": "John Doe",
+        "email": "john.doe@example.com"
+      }
+    }
+    ```
+
+### Order Consumer
+
+The consumer is automatically started and reads messages from Kafka, sending them to MongoDB.
+
+## Environment Variables
+
+The following environment variables can be configured:
+
+- `KAFKA_BROKER`: Kafka broker address (default: `kafka:9092`)
+- `KAFKA_TOPIC`: Kafka topic for orders (default: `orders`)
+- `KAFKA_GROUP_ID`: Kafka consumer group ID (default: `order-consumer-group`)
+- `MONGO_URI`: MongoDB connection URI (default: `mongodb://mongo:27017`)
+- `MONGO_DB`: MongoDB database name (default: `orderstream`)
+
+## Technologies Used
 
 - Go
 - Kafka
@@ -67,14 +120,18 @@ O consumidor é iniciado automaticamente e lê as mensagens do Kafka, enviando-a
 - Docker
 - Docker Compose
 
-## Contribuição
+## Running Tests
 
-1. Faça um fork do projeto.
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`).
-3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`).
-4. Faça o push para a branch (`git push origin feature/nova-feature`).
-5. Abra um Pull Request.
+To run the tests, use the following command:
 
-## Licença
+```sh
+go test ./...
+```
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para mais detalhes.
+## Contributing
+
+1. Fork the project.
+2. Create a branch for your feature (`git checkout -b feature/new-feature`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/new-feature`).
+5. Open a Pull Request.
