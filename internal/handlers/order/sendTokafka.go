@@ -7,8 +7,8 @@ import (
 	"orderstreamrest/internal/utils"
 )
 
-// produce is a function that produces an order
-func produce(order models.Order, cfg *config.Config) models.GenericResponse {
+// sendToKafka is a function that produces an order
+func sendToKafka(order models.Order, cfg *config.Config) models.GenericResponse {
 
 	order.InternalOrderID = utils.GenerateUniqueID()
 

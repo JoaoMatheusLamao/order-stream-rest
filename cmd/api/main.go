@@ -30,6 +30,8 @@ func main() {
 
 	routes.InitiateRoutes(engine, cfg)
 
+	go cfg.Kafka.Consumer()
+
 	startServer(engine)
 }
 

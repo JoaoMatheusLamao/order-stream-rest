@@ -42,6 +42,7 @@ func (cfg *Config) CloseAll() {
 	if cfg.Redis != nil {
 		cfg.Redis.Redis.Close()
 	}
+
 }
 
 // newClientMongo initializes the MongoDB client
@@ -72,7 +73,7 @@ func (cfg *Config) newClientRedis() error {
 // newKafkaInternal is a function that returns a new KafkaInternal struct
 func (cfg *Config) newKafkaInternal() error {
 
-	k, err := stream.NewKafkaInternal()
+	k, err := stream.NewKafkaInternal(cfg.Mongo)
 	if err != nil {
 		return errors.New("Error creating kafka client: " + err.Error())
 	}

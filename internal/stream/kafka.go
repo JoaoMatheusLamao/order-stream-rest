@@ -1,10 +1,8 @@
 package stream
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"time"
+	"orderstreamrest/internal/repositories/mongo"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -12,12 +10,15 @@ import (
 // KafkaInternal is a struct that contains a Kafka producer
 type KafkaInternal struct {
 	writer *kafka.Writer
+	reader *kafka.Reader
+	mgo    *mongo.MongoInternal
 }
 
 // NewKafkaInternal is a function that returns a new KafkaInternal struct
-func NewKafkaInternal() (*KafkaInternal, error) {
+func NewKafkaInternal(mgo *mongo.MongoInternal) (*KafkaInternal, error) {
 	broker := "kafka:9092"
 	topic := "orders"
+	groupID := "order-consumer-group"
 
 	conn, err := kafka.Dial("tcp", broker)
 	if err != nil {
@@ -57,21 +58,19 @@ func NewKafkaInternal() (*KafkaInternal, error) {
 		RequiredAcks: int(kafka.RequireOne),
 	})
 
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:     []string{broker},
+		Topic:       topic,
+		Partition:   0,
+		MinBytes:    10e3,
+		MaxBytes:    10e6,
+		StartOffset: kafka.FirstOffset,
+		GroupID:     groupID,
+	})
+
 	return &KafkaInternal{
 		writer: w,
+		reader: r,
+		mgo:    mgo,
 	}, nil
-}
-
-// WriteMessage is a function that writes a message to a Kafka topic
-func (k *KafkaInternal) WriteMessage(message []byte) error {
-	log.Println(fmt.Sprintf("Writing message to Kafka: %s", string(message)))
-
-	msg := kafka.Message{
-		Partition: 0,
-		Value:     message,
-		Time:      time.Now(),
-		Key:       []byte(fmt.Sprintf("%d", time.Now().Unix())),
-	}
-
-	return k.writer.WriteMessages(context.Background(), msg)
 }

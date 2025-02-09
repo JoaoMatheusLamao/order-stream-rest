@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateOrder is a function that creates an order
-func CreateOrder(cfg *config.Config) gin.HandlerFunc {
+// SendToKafka is a function that creates an order
+func SendToKafka(cfg *config.Config) gin.HandlerFunc {
 
 	var request models.Order
 
@@ -22,7 +22,7 @@ func CreateOrder(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		response := produce(request, cfg)
+		response := sendToKafka(request, cfg)
 		c.JSON(response.StatusCode, response)
 
 	}

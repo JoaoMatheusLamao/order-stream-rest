@@ -23,6 +23,6 @@ func InitiateRoutes(engine *gin.Engine, cfg *config.Config) {
 	productGroup.DELETE("/:sku", product.DeleteProduct(cfg))
 
 	orderGroup := engine.Group("/order")
-	orderGroup.POST("", order.CreateOrder(cfg))
+	orderGroup.POST("", order.SendToKafka(cfg))
 
 }
